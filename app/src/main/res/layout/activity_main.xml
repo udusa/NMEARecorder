@@ -24,13 +24,23 @@
         android:layout_above="@+id/recordBtn" />
 
     <Button
-        android:text="Start Recording"
+        android:visibility="gone"
+        android:text="Open Folder"
+        android:onClick="openFolderClick"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/button" />
+
+    <Button
+        android:text="Start Recording"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:id="@+id/recordBtn"
-        />
+        android:onClick="recordBtnClick"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 
 
 </RelativeLayout>

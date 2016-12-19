@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">NMEARecorder</string>
+    <string name="folder_open">Open Folder</string>
 </resources>
