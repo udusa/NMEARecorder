@@ -49,11 +49,28 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         nmeaDataView = (TextView) findViewById(R.id.nmeaDataView);
         nmeaDataView.setMovementMethod(new ScrollingMovementMethod());
 
-        recordBtn = (Button)findViewById(R.id.recordBtn);
+        recordBtn = (Button) findViewById(R.id.recordBtn);
 
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 //        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60000, 10, this);
 
+    }
+
+    @Override
+    protected void onPause() {
+        mLocationManager.removeNmeaListener(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mLocationManager.removeUpdates(this);
+        super.onPause();
     }
 
     @Override
@@ -72,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60000, 10, this);
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 1, this);
             mLocationManager.addNmeaListener(this);
         }
 
@@ -90,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     @Override
     public void onLocationChanged(Location location) {
-
+        //Log.d("Location",location.toString());
     }
 
     @Override
