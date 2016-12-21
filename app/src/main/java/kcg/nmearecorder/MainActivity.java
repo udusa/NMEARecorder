@@ -56,8 +56,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     }
 
-    @Override
-    protected void onPause() {
+    private void removeListeners(){
         mLocationManager.removeNmeaListener(this);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -70,12 +69,28 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             return;
         }
         mLocationManager.removeUpdates(this);
+    }
+
+    @Override
+    protected void onPause() {
+        removeListeners();
         super.onPause();
     }
 
     @Override
-    protected void onResume() {
+    protected void onStop() {
+        removeListeners();
+        super.onStop();
+    }
 
+    @Override
+    protected void onDestroy() {
+        removeListeners();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
         if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
             enableLocationDialog();
         }else{
@@ -96,13 +111,22 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         if(isServiceRunningInForeground(getApplicationContext(),RecordService.class)){
             recordBtn.setText("Stop Recording");
         }
-
         super.onResume();
     }
-
+    String nmeaStr = "";
+    byte nmeaReciveCounter = 0;
     @Override
     public void onNmeaReceived(long l, String s) {
-        nmeaDataView.append(s+"\n");
+        if(countLines(nmeaStr) > 100){
+            nmeaStr = nmeaStr.substring(s.length(),nmeaStr.length())+s;
+        }else{
+            nmeaStr+=s;
+        }
+        nmeaDataView.setText(nmeaStr);
+    }
+    private static int countLines(String str){
+        String[] lines = str.split("\r\n|\r|\n");
+        return  lines.length;
     }
 
     @Override

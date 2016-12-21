@@ -8,7 +8,10 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.GpsStatus;
+import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -24,14 +27,14 @@ import java.io.OutputStreamWriter;
  * Created by VLad Landa on 12/19/2016.
  */
 
-public class RecordService extends Service implements GpsStatus.NmeaListener {
+public class RecordService extends Service implements GpsStatus.NmeaListener ,LocationListener{
 
 
     LocationManager mLocationManager;
     public static boolean IS_SERVICE_RUNNING = false;
     final static String STARTFOREGROUND_ACTION = "STARTFOREGROUND_ACTION";
     final static String STOPFOREGROUND_ACTION = "STOPFOREGROUND_ACTION";
-    final static String NMEA_FOLDER = "NMEARecorders";
+    final static String NMEA_FOLDER = "NMEARecords";
     final static int NOTIFICATION_ID = 9125;
 
     private  OutputStreamWriter writer;
@@ -56,6 +59,7 @@ public class RecordService extends Service implements GpsStatus.NmeaListener {
                     // for ActivityCompat#requestPermissions for more details.
                     return super.onStartCommand(intent, flags, startId);
                 }
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 1, this);
                 mLocationManager.addNmeaListener(this);
                 Intent notificationIntent = new Intent(this, MainActivity.class);
                 PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
@@ -128,7 +132,10 @@ public class RecordService extends Service implements GpsStatus.NmeaListener {
     OutputStreamWriter getWriter(String fileName) throws IOException {
         File folder = new File(Environment.getExternalStorageDirectory() +
                 File.separator + NMEA_FOLDER);
-        folder.mkdirs();
+/*        Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+        if(isSDPresent) {
+        }*/
+        folder.mkdir();
         if (folder.exists()) {
             File file = new File(folder, fileName);
             if(file.createNewFile()){
@@ -137,5 +144,25 @@ public class RecordService extends Service implements GpsStatus.NmeaListener {
             }
         }
         return null;
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
+
     }
 }
